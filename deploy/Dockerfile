@@ -6,6 +6,8 @@ COPY frontend/package.json frontend/package-lock.json ./frontend/
 RUN npm ci --prefix frontend
 COPY frontend ./frontend
 COPY locales ./locales
+# Call the backend through the same HTTPS origin; never through localhost in the browser.
+ENV VITE_API_BASE_URL=/
 RUN npm run build --prefix frontend
 
 FROM python:3.11-bookworm AS backend-build
