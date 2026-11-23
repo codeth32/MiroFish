@@ -1,0 +1,38 @@
+# MiroFish: one HTTPS public entrypoint, private backend, persistent uploads.
+# Render prompts for secrets during initial Blueprint creation; no API keys in Git.
+services:
+  - type: web
+    name: mirofish-private
+    runtime: docker
+    dockerfilePath: ./deploy/Dockerfile
+    dockerContext: .
+    region: virginia
+    plan: 1c-2g
+    numInstances: 1
+    autoDeployTrigger: commit
+    healthCheckPath: /health
+    disk:
+      name: mirofish-uploads
+      mountPath: /app/backend/uploads
+      sizeGB: 5
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: OASIS_DEFAULT_MAX_ROUNDS
+        value: "10"
+      - key: LLM_BASE_URL
+        value: https://api.openai.com/v1
+      - key: LLM_MODEL_NAME
+        value: gpt-4.1-mini
+      - key: SECRET_KEY
+        generateValue: true
+      - key: LLM_API_KEY
+        sync: false
+      - key: ZEP_API_KEY
+        sync: false
+      - key: APP_AUTH_USERNAME
+        value: admin
+      - key: APP_AUTH_PASSWORD
+        sync: false
